@@ -1,4 +1,4 @@
-# MECA0011-2 🚀
+# MECA0011-2-Project 🚀
 Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides
 
 ## Guide d'utilisation de Git: Pull, Commit et Push 🔄
