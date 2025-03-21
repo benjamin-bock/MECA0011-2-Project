@@ -6,7 +6,6 @@ Created on Thu Mar 20 15:59:13 2025
 @author: baptiste
 """
 import numpy as np 
-import scipy as sc
 
 #return j, a, b
 
