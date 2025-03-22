@@ -5,8 +5,14 @@ from laplacian import create_system
 
 def main():
 
-    dom_1 = np.loadtxt('CL\1-dom.txt', dtype = int)
-    cl_1 = np.loadtxt('CL\1-cl.txt', dtype = int)
-    num_1 = np.loadtxt('CL\1-num.txt', dtype = int)
+    dom_1 = np.loadtxt('CL/1-dom.txt', dtype = int)
+    cl_1 = np.loadtxt('CL/1-cl.txt', dtype = float)
+    num_1 = np.loadtxt('CL/1-num.txt', dtype = int)
 
-    create_system(dom_1, num_1, cl_1)
+    A, B = create_system(dom_1, num_1, cl_1)
+
+    print(A)
+    print(B)
+    
+
+    return A, B

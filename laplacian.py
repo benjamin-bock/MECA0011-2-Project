@@ -6,6 +6,8 @@ Created on Thu Mar 20 18:53:03 2025
 @author: benjamin-bock
 """
 
+import numpy as np
+from getCoeff import getCoeff as gc
 def create_system(dom_1, num_1, cl_1):
     """
     Create the system of equations for the Laplacian operator.
@@ -23,36 +25,40 @@ def create_system(dom_1, num_1, cl_1):
     -------
     A : array
         The matrix of the system of equations.
-    b : array
+    B : array
         The right-hand side of the system of equations.
     """
-    import numpy as np
+    
     
     # Create the matrix A
-    A = np.zeros((num_1, num_1))
+    num_max = int(np.max(num_1)) #Numéro de noeud max
+    num_min = int(min_exclude_zero(num_1)) #Numéro de noeud min 
+    num = int(num_max - num_min + 1) #Nombre de noeuds
+    A = np.zeros((num, num)) #Matrice A de taille num x num
     
     # Create the vector b
-    b = np.zeros(num_1)
+    B = np.zeros((num)) #Vecteur b de taille num
     
     # Loop over the nodes
-    for i in range(num_1):
-        # Check if the node is on the boundary
-        if i in cl_1:
-            # Set the diagonal element to 1
-            A[i, i] = 1
-            # Set the right-hand side to the boundary condition
-            b[i] = 0
-        else:
-            # Set the diagonal element to -4
-            A[i, i] = -4
-            # Set the off-diagonal elements to 1
-            if i - 1 >= 0:
-                A[i, i - 1] = 1
-            if i + 1 < num_1:
-                A[i, i + 1] = 1
-            if i - dom_1[1] >= 0:
-                A[i, i - dom_1[1]] = 1
-            if i + dom_1[1] < num_1:
-                A[i, i + dom_1[1]] = 1
-    
-    return A, b
+    for i in range(num_min, num_max + 1):
+
+        num_cent = i #Numéro du noeud central
+        u, v = np.where(num_1 == num_cent) #Coordonnées du noeud central
+
+        num_left = num_1[u, v - 1] #Numéro du noeud à gauche
+        num_right = num_1[u, v + 1] #Numéro du noeud à droite
+        num_down = num_1[u + 1, v] #Numéro du noeud en bas
+        num_up = num_1[u - 1, v] #Numéro du noeud en haut
+        type_cent = dom_1[u, v] #Type du noeud central
+        cl_cent = cl_1[u, v] #Condition limite du noeud central
+
+        j, a, b = gc(num_left, num_right, num_down, num_up, num_cent, type_cent, cl_cent)
+        A[i - num_min, j - num_min] = a
+        B[i - num_min] = b
+    return A, B
+
+def min_exclude_zero(arr):
+    non_zero = arr[arr != 0.0]
+    if len(non_zero) == 0.0:
+        return None  # ou une autre valeur par défaut
+    return np.min(non_zero)
