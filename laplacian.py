@@ -7,6 +7,8 @@ Created on Thu Mar 20 18:53:03 2025
 """
 
 import numpy as np
+import scipy as sp
+
 from getCoeff import getCoeff as gc
 def create_system(dom_1, num_1, cl_1):
     """
@@ -62,3 +64,24 @@ def min_exclude_zero(arr):
     if len(non_zero) == 0.0:
         return None  # ou une autre valeur par défaut
     return np.min(non_zero)
+
+def solve_system(A, B):
+    """
+    Solve the system of equations AX = B.
+    
+    Parameters
+    ----------
+    A : array
+        The matrix of the system of equations.
+    B : array
+        The right-hand side of the system of equations.
+        
+    Returns
+    ------- 
+    X : array 
+        The solution of the system of equations. Either \phi or \psi wether it is a potential or a stream function.
+    """
+    # Convertir A en format CSR
+    A_csr = sp.sparse.csr_matrix(A)
+    X = sp.sparse.linalg.spsolve(A_csr, B)
+    return X
