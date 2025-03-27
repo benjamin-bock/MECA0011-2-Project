@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 
-import laplacian as lp
+from fluid_dynamics import create_system, solve_system, getCoeff , calculate_pressure
+from tools import deriv, force, deriv
 
 def main():
     
@@ -14,7 +15,7 @@ def main():
         print("Erreur lors de l'ouverture des fichiers")
         return None
 
-    A, B = lp.create_system(dom_1, num_1, cl_1)
+    A, B = create_system(dom_1, num_1, cl_1)
     print(f"A shape: {A.shape}, B shape: {B.shape}")
     if A.shape[0] != A.shape[1]:
         raise ValueError("Matrix A is not square!")
@@ -26,7 +27,7 @@ def main():
     print(f"La matrice A vaut \n {A} \n")
     print(f"La matrice B vaut \n {B} \n")
     
-    X = lp.solve_system(A, B)
+    X = solve_system(A, B)
     print(f"La matrice X vaut \n {X} \n")
 
     if X.ndim == 1 and dom_1.shape:

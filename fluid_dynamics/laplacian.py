@@ -9,7 +9,7 @@ Created on Thu Mar 20 18:53:03 2025
 import numpy as np
 import scipy as sp
 
-from getCoeff import getCoeff as gc
+from fluid_dynamics.getCoeff import getCoeff as gc
 def create_system(dom_1, num_1, cl_1):
     """
     Create the system of equations for the Laplacian operator.

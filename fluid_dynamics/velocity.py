@@ -1,4 +1,4 @@
-from deriv import deriv as d
+from tools.deriv import deriv as d
 import numpy as np
 import scipy as sp
 

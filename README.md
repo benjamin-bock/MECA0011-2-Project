@@ -1,6 +1,10 @@
 # MECA0011-2-Project 🚀
 Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides
 
+
+
+
+
 ## Guide d'utilisation de Git: Pull, Commit et Push 🔄
 
 Ce guide est conçu pour vous aider à comprendre les bases de Git et comment effectuer les opérations courantes comme `pull`, `commit` et `push`, à la fois via le terminal et GitHub Desktop. Parfait pour les débutants!
