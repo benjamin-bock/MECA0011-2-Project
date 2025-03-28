@@ -1,46 +1,46 @@
 # MECA0011-2-Project 🚀
 Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides
-
-#    STRUCTURE DU PROJET :
+```text
 MECA0011-2-Project/
 ├── CL/
-│ ├── 000-README.txt
-│ ├── 1-cl.txt
-│ ├── 1-dom.txt
-│ ├── 1-num.txt
-│ ├── 2-contourObj.txt
-│ ├── 2-dom.txt
-│ └── 2-num.txt
+│   ├── 000-README.txt
+│   ├── 1-cl.txt
+│   ├── 1-dom.txt
+│   ├── 1-num.txt
+│   ├── 2-contourObj.txt
+│   ├── 2-dom.txt
+│   └── 2-num.txt
 ├── fluid_dynamics/
-│ ├── getCoeff.py
-│ ├── init.py
-│ ├── laplacian.py
-│ ├── pressure.py
-│ ├── pycache/
-│ │ ├── getCoeff.cpython-312.pyc
-│ │ ├── init.cpython-312.pyc
-│ │ ├── laplacian.cpython-312.pyc
-│ │ ├── pressure.cpython-312.pyc
-│ │ └── velocity.cpython-312.pyc
-│ └── velocity.py
+│   ├── getCoeff.py
+│   ├── __init__.py
+│   ├── laplacian.py
+│   ├── pressure.py
+│   ├── __pycache__/
+│   │   ├── getCoeff.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── laplacian.cpython-312.pyc
+│   │   ├── pressure.cpython-312.pyc
+│   │   └── velocity.cpython-312.pyc
+│   └── velocity.py
 ├── main.py
-├── pycache/
-│ ├── getCoeff.cpython-311.pyc
-│ ├── getCoeff.cpython-312.pyc
-│ ├── laplacian.cpython-311.pyc
-│ └── laplacian.cpython-312.pyc
+├── __pycache__/
+│   ├── getCoeff.cpython-311.pyc
+│   ├── getCoeff.cpython-312.pyc
+│   ├── laplacian.cpython-311.pyc
+│   └── laplacian.cpython-312.pyc
 ├── README.md
 ├── requirements.txt
 └── tools/
-├── circu.py
-├── deriv.py
-├── force.py
-├── init.py
-└── pycache/
-├── circu.cpython-312.pyc
-├── deriv.cpython-312.pyc
-├── force.cpython-312.pyc
-└── init.cpython-312.pyc
+    ├── circu.py
+    ├── deriv.py
+    ├── force.py
+    ├── __init__.py
+    └── __pycache__/
+        ├── circu.cpython-312.pyc
+        ├── deriv.cpython-312.pyc
+        ├── force.cpython-312.pyc
+        └── __init__.cpython-312.pyc
+```
 
 ## Guide d'utilisation de Git: Pull, Commit et Push 🔄
 
