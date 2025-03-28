@@ -1,7 +1,7 @@
 # MECA0011-2-Project 🚀
 Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides
 
-'''text
+```text
 MECA0011-2-Project/
 ├── CL/
 │   ├── 000-README.txt
