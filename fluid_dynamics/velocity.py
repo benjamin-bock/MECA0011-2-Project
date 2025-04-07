@@ -9,23 +9,36 @@ def min_exclude_zero(arr):
         return None  # ou une autre valeur par défaut
     return np.min(non_zero)
 
-def velocity(X, dom, cl,num,h ):
-    col = X.shape[1]
-    row = X.shape[0]
-    num_max = int(np.max(num)) #Numéro de noeud max
-    num_min = int(min_exclude_zero(num)) #Numéro de noeud min 
-    num = int(num_max - num_min + 1)
-    V = np.zeros_like(X, dtype=float)
+def velocity(X, dom, h):
+    # Initialize velocity arrays with same shape as domain
+    u = np.zeros_like(X, dtype=float)
+    v = np.zeros_like(X, dtype=float)
+    
+    # Calculate velocities at each point in the domain
     for i in range(1, X.shape[0]-1):
-        num_cent = i
-        u, v = np.where(num == num_cent)
-        num_left = num[u, v - 1]
-        num_right = num[u, v + 1]
-        num_down = num[u + 1, v]
-        num_up = num[u - 1, v]
-        type_cent = dom[u, v]
-        type_left = dom[u, v - 1]
-        type_right = dom[u, v + 1]
-        cl_cent = cl[u, v]
-        V[u, v] = d(X[u, v - 1], X[u, v], X[u, v + 1], type_left,type_cent, type_right, h)
-    return V
+        for j in range(1, X.shape[1]-1):
+            if dom[i,j] != 0:  # Only calculate for points in the domain
+                # Get node types for derivatives
+                type_left = dom[i,j-1]
+                type_right = dom[i,j+1] 
+                type_up = dom[i-1,j]
+                type_down = dom[i+1,j]
+                type_cent = dom[i,j]
+                
+                # Get stream function values
+                psi_left = X[i,j-1]
+                psi_right = X[i,j+1]
+                psi_up = X[i-1,j] 
+                psi_down = X[i+1,j]
+                psi_cent = X[i,j]
+                
+                # Calculate velocity components using derivatives of stream function
+                # u = ∂ψ/∂y
+                u[i,j] = d(psi_up, psi_cent, psi_down,
+                          type_up, type_cent, type_down, h)
+                
+                # v = -∂ψ/∂x
+                v[i,j] = -d(psi_left, psi_cent, psi_right,
+                           type_left, type_cent, type_right, h)
+    
+    return u, v

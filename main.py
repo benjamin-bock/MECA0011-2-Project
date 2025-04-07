@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 
-from fluid_dynamics import create_system, solve_system, getCoeff , calculate_pressure
-from tools import deriv, force, deriv
-
+from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
+from tools import circu, deriv, force
+from tools.constante import rho, g, p_ref, ref_point
 def main():
-    
+    print("\nRésolution du canal rectiligne :\n")
     try:
         dom_1 = np.loadtxt('CL/1-dom.txt', dtype = int)
         cl_1 = np.loadtxt('CL/1-cl.txt', dtype = float)
@@ -16,7 +16,7 @@ def main():
         return None
 
     A, B = create_system(dom_1, num_1, cl_1)
-    print(f"A shape: {A.shape}, B shape: {B.shape}")
+    print(f"A shape: {A.shape}, B shape: {B.shape}\n")
     if A.shape[0] != A.shape[1]:
         raise ValueError("Matrix A is not square!")
     if A.shape[0] != B.shape[0]:
@@ -32,13 +32,78 @@ def main():
 
     if X.ndim == 1 and dom_1.shape:
         sol_grid = np.zeros_like(dom_1, dtype=float)
-        sol_grid[dom_1 == 1] = X  # Map solution back to domain
+        for i in range(len(X)):
+            sol_grid[np.where(num_1 == i + 1)] = X[i]  # Map solution back to domain
+        
+        plt.figure(figsize=(10, 8))
         plt.imshow(sol_grid, cmap='viridis')
         plt.colorbar()
-        plt.title("Solution Visualization")
+        
+        # Ajouter les numéros des noeuds
+        for i in range(dom_1.shape[0]):
+            for j in range(dom_1.shape[1]):
+                if num_1[i, j] != 0:  # Ne pas afficher les zéros
+                    plt.text(j, i, str(num_1[i, j]), 
+                            ha='center', va='center', 
+                            color='white', fontweight='bold', fontsize=22)
+        
+        # Ajouter la grille
+        plt.grid(True, which='major', color='black', linewidth=2)
+        plt.xticks(np.arange(-.5, dom_1.shape[1], 1), [])
+        plt.yticks(np.arange(-.5, dom_1.shape[0], 1), [])
+        
+        plt.title("Visualisation de la solution", fontsize=22)
         plt.show()
+
+        # Calcul du champ de vitesse
+        h = 0.5  # pas spatial pour le canal rectiligne (d'après le README)
+        u, v = velocity(sol_grid, dom_1, h)
+        
+        # Visualisation du champ de vitesse
+        plt.figure(figsize=(12, 8))
+        plt.quiver(u, v)
+        plt.title("Champ de vitesse")
+        plt.show()
+
+        # Création d'une grille de z (hauteur)
+        z = np.zeros_like(sol_grid)
+        for i in range(z.shape[0]):
+            z[i, :] = i * h
+        
+        pressure = calculate_pressure(u, v, z, rho, g, None, p_ref, ref_point)
+        
+        # Visualisation de la pression
+        plt.figure(figsize=(12, 8))
+        plt.imshow(pressure, cmap='RdBu')
+        plt.colorbar(label='Pression (Pa)')
+        plt.title("Distribution de pression")
+        plt.show()
+
+        # Calcul des forces sur les parois
+        # Exemple pour une section verticale au milieu
+        mid = sol_grid.shape[1] // 2
+        x = np.array([i * h for i in range(sol_grid.shape[0])])
+        y = np.zeros_like(x)
+        p_section = pressure[:, mid]
+        
+        fx, fy = force(p_section, x, y)
+        print("\nForces sur la section centrale:")
+        print(f"Fx = {fx:.2f} N")
+        print(f"Fy = {fy:.2f} N")
+        
+        # Calcul de la circulation
+        # Exemple pour un contour rectangulaire au centre
+        x_contour = [2*h, 2*h, 3*h, 3*h, 2*h]
+        y_contour = [2*h, 3*h, 3*h, 2*h, 2*h]
+        u_contour = [u[2,2], u[2,3], u[3,3], u[3,2], u[2,2]]
+        v_contour = [v[2,2], v[2,3], v[3,3], v[3,2], v[2,2]]
+        
+        circulation = circu(u_contour, v_contour, x_contour, y_contour)
+        print(f"\nCirculation autour du contour central: {circulation:.2f} m²/s")
     
-    return X
+    print("\n############################################################################\n")
+    print("Résolution du canal en \"J\" \n")
+    return X, u, v, pressure  # retourner plus de résultats pour analyse ultérieure
 
 if __name__ == "__main__":
-    main()
+    X_rect, u_rect, v_rect, pressure_rect = main()
