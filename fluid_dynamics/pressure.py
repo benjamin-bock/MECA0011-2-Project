@@ -12,6 +12,6 @@ def calculate_pressure(u, v, z, rho, g, C, p_ref, ref_point):
         C = (p_ref/(rho*g)) + z[i,j] + velocity_sq[i,j]/(2*g)
     
     # Calcul de la pression selon l'équation de Bernoulli
-    pressure = rho * g * (C - z - velocity_sq/(2*g))
+    pressure = rho * g * (C + z - velocity_sq/(2*g))
     
     return pressure
