@@ -122,6 +122,7 @@ def main():
         
         
         # Création et résolution du système
+
         A, B = create_system(dom_2, num_2, np.zeros_like(dom_2, dtype=float))  # pas de cl_2 nécessaire ici
         X = solve_system(A, B)
         
@@ -179,8 +180,13 @@ def main():
 
     X_rect, u_rect, v_rect, pressure_rect = canal_rectiligne()
     X_j, u_j, v_j, pressure_j = canal_en_j()
+    dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
+    num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
+    contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
+    cl_2 = np.loadtxt('CL/2-cl.txt', dtype = int )
     
-    return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j
+    
+    return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, dom_2, num_2, contour_obj_2, cl_2
 
 if __name__ == "__main__":
-    X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j = main()
+    X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, dom_2, num_2, contour_obj_2, cl_2 = main()
