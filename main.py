@@ -122,9 +122,15 @@ def main():
 
         # Définition des conditions aux limites
         cl_2 = np.zeros_like(dom_2, dtype=float)
+        # Q_out
         for i in range(2, 21):
             print(i)
-            cl_2[2, i] = (Q_out/2)/19
+            cl_2[1, i] = Q_out/19
+        # Q_in1
+        for i in range(80,99):
+            print(i)
+            cl_2[1, i] = (Q_out/2)/19
+            cl_2[99, i] = (Q_out/2)/19
         
         # Création et résolution du système
         A, B = create_system(dom_2, num_2, np.zeros_like(dom_2, dtype=float)) # pas de cl_2 nécessaire ici
