@@ -221,6 +221,19 @@ def main():
         return X, u, v, pressure
 
     X_rect, u_rect, v_rect, pressure_rect = canal_rectiligne()
+<<<<<<< HEAD
+    X_j, u_j, v_j, pressure_j = canal_en_j()
+    dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
+    num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
+    contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
+    cl_2 = np.loadtxt('CL/2-cl.txt', dtype = int )
+    
+    
+    return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, dom_2, num_2, contour_obj_2, cl_2
+
+if __name__ == "__main__":
+    X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, dom_2, num_2, contour_obj_2, cl_2 = main()
+=======
     X_j, u_j, v_j, pressure_j, cl_2 = canal_en_j()
     
     return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, cl_2
@@ -233,3 +246,4 @@ if __name__ == "__main__":
     dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
     num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
     contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
+>>>>>>> 92024a60e71d10a2e27a4836478c63feeae35812
