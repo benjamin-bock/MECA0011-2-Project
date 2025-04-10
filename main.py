@@ -4,7 +4,8 @@ import scipy as sp
 
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
 from tools import circu, deriv, force
-from tools.constante import rho, g, p_ref, ref_point
+from tools.constante import rho, g, p_ref, ref_point, Q_out
+
 def main():
     def canal_rectiligne():
         print("\nRésolution du canal rectiligne :\n")
@@ -105,6 +106,7 @@ def main():
         return X, u, v, pressure
     
     def canal_en_j():
+        
         print("\n############################################################################\n")
         print("Résolution du canal en \"J\" \n")
         
@@ -119,10 +121,13 @@ def main():
         h = 0.01  # pas spatial de 0.01 m
 
         # Définition des conditions aux limites
-        
+        cl_2 = np.zeros_like(dom_2, dtype=float)
+        for i in range(2, 21):
+            print(i)
+            cl_2[2, i] = (Q_out/2)/19
         
         # Création et résolution du système
-        A, B = create_system(dom_2, num_2, np.zeros_like(dom_2, dtype=float))  # pas de cl_2 nécessaire ici
+        A, B = create_system(dom_2, num_2, np.zeros_like(dom_2, dtype=float)) # pas de cl_2 nécessaire ici
         X = solve_system(A, B)
         
         # Création de la grille de solution
@@ -175,12 +180,18 @@ def main():
         print(f"\nCirculation autour de l'obstacle: {circulation:.2f} m²/s")
 
         
-        return sol_grid, u, v, pressure  # retourner plus de résultats pour analyse ultérieure
+        return sol_grid, u, v, pressure, cl_2  # retourner plus de résultats pour analyse ultérieure
 
     X_rect, u_rect, v_rect, pressure_rect = canal_rectiligne()
-    X_j, u_j, v_j, pressure_j = canal_en_j()
+    X_j, u_j, v_j, pressure_j, cl_2 = canal_en_j()
     
-    return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j
+    return X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, cl_2
 
 if __name__ == "__main__":
-    X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j = main()
+    X_rect, u_rect, v_rect, pressure_rect, X_j, u_j, v_j, pressure_j, cl_2 = main()
+    
+    
+    
+    dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
+    num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
+    contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
