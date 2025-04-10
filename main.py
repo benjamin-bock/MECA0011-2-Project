@@ -66,10 +66,10 @@ def main():
             plt.title("Champ de vitesse")
             plt.show()
 
-            # Création d'une grille de z (hauteur)
+            # Création d'une grille de z (hauteur constante)
             z = np.zeros_like(sol_grid)
             for i in range(z.shape[0]):
-                z[i, :] = i * h
+                z[i, :] = 0
             
             pressure = calculate_pressure(u, v, z, rho, g, None, p_ref, ref_point)
             
@@ -117,6 +117,9 @@ def main():
             return None
         
         h = 0.01  # pas spatial de 0.01 m
+
+        # Définition des conditions aux limites
+        
         
         # Création et résolution du système
         A, B = create_system(dom_2, num_2, np.zeros_like(dom_2, dtype=float))  # pas de cl_2 nécessaire ici
