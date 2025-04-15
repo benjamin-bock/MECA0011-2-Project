@@ -186,22 +186,27 @@ def main():
             # Visualisation du champ de vitesse
             plt.style.use('seaborn-v0_8-whitegrid')
             fig, ax = plt.subplots(figsize=(14, 10), dpi=100)
-            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
-            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
-            y = np.flipud(y)  # Inverse l'ordre des indices de y
-
+            
+            # Génération du meshgrid pour quiver (y inversé)
+            x_quiver, y_quiver = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0])[::-1])
             
             # Utilisation correcte de quiver
-            q = ax.quiver(x, y, u, v, speed,
+            q = ax.quiver(x_quiver, y_quiver, u, v, speed,
                           cmap='inferno',  # Palette de couleurs
-                          scale=5,         # Échelle des flèches
-                          width=0.001,      # Largeur des flèches
-                          headwidth=5,      # Largeur des têtes de flèches
-                          alpha=0.8)        # Transparence
+                          scale=2,         # Échelle des flèches
+                          width=0.001,     # Largeur des flèches
+                          headwidth=3,     # Largeur des têtes de flèches
+                          alpha=0.8)       # Transparence
             
             # Ajout d'une barre de couleur
             cbar = fig.colorbar(q, ax=ax, label='Vitesse (m/s)', shrink=0.8)
             cbar.ax.tick_params(labelsize=12)
+            
+            # Génération du meshgrid pour streamplot (y non inversé)
+            x_stream, y_stream = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
+            
+            # Ajout de lignes de courant (optionnel)
+            ax.streamplot(x_stream, y_stream, u, v, color='w', linewidth=0.5)
             
             # Personnalisation de l'affichage
             ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)',
@@ -210,9 +215,6 @@ def main():
             ax.set_ylabel('Position y (m)', fontsize=14, fontfamily='serif')
             ax.grid(True, linestyle='--', alpha=0.5)
             ax.set_aspect('equal')  # Conserve les proportions
-            
-            # Ajout de lignes de courant (optionnel)
-            ax.streamplot(x, y, u, v, color='w', linewidth=0.5)
             
             plt.tight_layout()
             plt.show()
