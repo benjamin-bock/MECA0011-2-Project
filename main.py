@@ -62,15 +62,34 @@ def main():
             plt.tight_layout(pad = 3)
             plt.show()
 
-            # Calcul du champ de vitesse
             h = 0.5  # pas spatial pour le canal rectiligne (d'après le README)
             u, v = velocity(sol_grid, dom_1, h)
             
+            speed = np.sqrt(u**2 + v**2)
             # Visualisation du champ de vitesse
-            plt.figure(figsize=(12, 8))
-            plt.quiver(u, v)
-            plt.title("Champ de vitesse")
+            plt.style.use('seaborn-v0_8-whitegrid') 
+            fig, ax = plt.subplots(figsize=(14, 10), dpi=100)
+            q = ax.quiver(u, v, speed, 
+              cmap='inferno',  # Palette de couleurs
+              scale=20,         # Échelle des flèches
+              width=0.002,      # Largeur des flèches
+              headwidth=5,      # Largeur des têtes de flèches
+              alpha=0.8)        # Transparence
+
+            # Ajout d'une barre de couleur
+            cbar = fig.colorbar(q, ax=ax, label='Vitesse (m/s)', shrink=0.8)
+            cbar.ax.tick_params(labelsize=12)
+
+             # Personnalisation de l'affichage 
+            ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)', 
+             fontsize=16, pad=20, fontfamily='serif')
+            ax.set_xlabel('Position x (m)', fontsize=14, fontfamily='serif')
+            ax.set_ylabel('Position y (m)', fontsize=14, fontfamily='serif')
+            ax.grid(True, linestyle='--', alpha=0.5)
+            ax.set_aspect('equal')  # Conserve les proportions
+            plt.tight_layout()
             plt.show()
+
 
             # Création d'une grille de z (hauteur constante)
             z = np.zeros_like(sol_grid)
@@ -163,7 +182,7 @@ def main():
             
            
             plt.figure(figsize=(14, 12))
-            img = plt.imshow(sol_grid, cmap=white_inferno, interpolation='nearest')
+            img = plt.imshow(sol_grid, cmap="PuOr", interpolation='nearest')
             cbar = plt.colorbar(img, fraction=0.046, pad=0.04)
             cbar.ax.tick_params(labelsize=12) 
             cbar.set_label('Valeur de la solution', fontsize=14)
