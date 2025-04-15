@@ -6,6 +6,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
 from tools import circu, deriv, force
 from tools.constante import rho, g, p_ref, ref_point, Q_out
+from CL.createcl2 import createCL2
 
 def main():
     def canal_rectiligne():
@@ -126,6 +127,8 @@ def main():
         
         h = 0.01  #m
 
+        # Définition des conditions aux limites
+        cl_2 = createCL2(dom_2, num_2, contour_obj_2)
         
         """
          Q_out
@@ -257,6 +260,8 @@ def main():
             """
             
         return X
+
+        return X, u, v, pressure, cl_2
 
     #X_rect = canal_rectiligne()
     X_j  = canal_en_j()
