@@ -130,16 +130,6 @@ def main():
         # Définition des conditions aux limites
         cl_2 = createCL2(dom_2, num_2, contour_obj_2)
         
-        """
-         Q_out
-        for i in range(2, 21):
-            cl_2[1, i] = Q_out/19
-            
-         Q_in1 et Q_in2
-        for i in range(80,99):
-            cl_2[1, i] = (Q_out/2)/19
-            cl_2[99, i] = (Q_out/2)/19
-        """
         
         A, B = create_system(dom_2, num_2, cl_2)
         print(f"A shape: {A.shape}, B shape: {B.shape}\n")
@@ -257,9 +247,6 @@ def main():
             
             circulation = circu(u_contour, v_contour, x_contour, y_contour)
             print(f"\nCirculation autour du contour central: {circulation:.2f} m²/s")
-            """
-            
-        return X
 
         return X, u, v, pressure, cl_2
 
