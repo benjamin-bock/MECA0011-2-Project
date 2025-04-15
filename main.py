@@ -6,6 +6,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
 from tools import circu, deriv, force
 from tools.constante import rho, g, p_ref, ref_point, Q_out
+from CL.createcl2 import createCL2
 
 def main():
     def canal_rectiligne():
@@ -145,17 +146,9 @@ def main():
         
         h = 0.01  #m
 
+        # Définition des conditions aux limites
+        cl_2 = createCL2(dom_2, num_2, contour_obj_2)
         
-        """
-         Q_out
-        for i in range(2, 21):
-            cl_2[1, i] = Q_out/19
-            
-         Q_in1 et Q_in2
-        for i in range(80,99):
-            cl_2[1, i] = (Q_out/2)/19
-            cl_2[99, i] = (Q_out/2)/19
-        """
         
         A, B = create_system(dom_2, num_2, cl_2)
         print(f"A shape: {A.shape}, B shape: {B.shape}\n")
@@ -203,40 +196,46 @@ def main():
             plt.show()
             
 
-            #Calcul du champ de vitesse
+            # Calcul du champ de vitesse
             h = 0.01  # pas spatial pour le canal rectiligne (d'après le README)
             u, v = velocity(sol_grid, dom_2, h)
             
             speed = np.sqrt(u**2 + v**2)
+            
             # Visualisation du champ de vitesse
-            plt.style.use('seaborn-v0_8-whitegrid') 
+            plt.style.use('seaborn-v0_8-whitegrid')
             fig, ax = plt.subplots(figsize=(14, 10), dpi=100)
-            q = ax.quiver(u, v, speed, 
-              cmap='inferno',  # Palette de couleurs
-              scale=20,         # Échelle des flèches
-              width=0.002,      # Largeur des flèches
-              headwidth=5,      # Largeur des têtes de flèches
-              alpha=0.8)        # Transparence
+            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
+            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
+            y = np.flipud(y)  # Inverse l'ordre des indices de y
 
+            
+            # Utilisation correcte de quiver
+            q = ax.quiver(x, y, u, v, speed,
+                          cmap='inferno',  # Palette de couleurs
+                          scale=5,         # Échelle des flèches
+                          width=0.001,      # Largeur des flèches
+                          headwidth=5,      # Largeur des têtes de flèches
+                          alpha=0.8)        # Transparence
+            
             # Ajout d'une barre de couleur
             cbar = fig.colorbar(q, ax=ax, label='Vitesse (m/s)', shrink=0.8)
             cbar.ax.tick_params(labelsize=12)
-
-             # Personnalisation de l'affichage 
-            ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)', 
-             fontsize=16, pad=20, fontfamily='serif')
+            
+            # Personnalisation de l'affichage
+            ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)',
+                         fontsize=16, pad=20, fontfamily='serif')
             ax.set_xlabel('Position x (m)', fontsize=14, fontfamily='serif')
             ax.set_ylabel('Position y (m)', fontsize=14, fontfamily='serif')
             ax.grid(True, linestyle='--', alpha=0.5)
-            ax.set_aspect('equal')  # Conserve les proportionsa
-
+            ax.set_aspect('equal')  # Conserve les proportions
+            
             # Ajout de lignes de courant (optionnel)
-            # x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
-            # ax.streamplot(x, y, u, v, color='w', linewidth=0.5, alpha=0.5)
-
+            ax.streamplot(x, y, u, v, color='w', linewidth=0.5)
+            
             plt.tight_layout()
             plt.show()
-            """
+
 
             # Création d'une grille de z (hauteur constante)
             z = np.zeros_like(sol_grid)
@@ -273,9 +272,8 @@ def main():
             
             circulation = circu(u_contour, v_contour, x_contour, y_contour)
             print(f"\nCirculation autour du contour central: {circulation:.2f} m²/s")
-            """
-            
-        return X
+
+        return X, u, v, pressure, cl_2
 
     #X_rect = canal_rectiligne()
     X_j  = canal_en_j()
