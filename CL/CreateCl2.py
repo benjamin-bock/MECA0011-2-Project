@@ -1,48 +1,35 @@
 import numpy as np
 
-# Load the 2-dom.txt file
-dom_matrix = np.loadtxt('CL/2-dom.txt', dtype=int)
+# Load the domain matrix
+dom_matrix = np.loadtxt('2-dom.txt', dtype=int)
 
-# Create the new cl1 matrix based on 2-dom.txt
+# Create the cl1 matrix based on the domain
 cl1_matrix = np.zeros(dom_matrix.shape, dtype=float)
 
-# Set nodes where dom_matrix is 2 to 0.00000000
+# Set nodes where dom_matrix is 2 to 0.00000000 (Dirichlet condition)
 cl1_matrix[dom_matrix == 2] = 0.00000000
 
-# Calculate Q_out, Q_in, and q_spe
-Q_out = (10 * 0 + 5 * 1) * 10**(-3)  
-# Load the 2-dom.txt file
-dom_matrix = np.loadtxt('CL/2-dom.txt', dtype=int)
+# Calculate Q_out based on group number (example: group 58)
+X = 0   # X is the tens digit of the group number
+Y = 1  # Y is the units digit of the group number
+Q_out = (10 * X + 5 * Y) * 10**(-3)  # Q_out in m³/s
+Q_in = Q_out / 2  # Q_in = Q_out / 2
+q_spe = Q_in  # Uniform distribution over 18 nodes
+cl1_matrix[dom_matrix == 2] = Q_out
+# Apply Dirichlet conditions at the inlet and outlet
+# Example: Set q_spe in the first row (row index 0) and columns 2 to 20
+cl1_matrix[1, 1:21] = Q_out
+cl1_matrix[1, 79:100] = q_spe  # Inlet
+cl1_matrix[99, 79:100] = q_spe  # Outlet
 
-# Create the new cl1 matrix based on 2-dom.txt
-cl1_matrix = np.zeros(dom_matrix.shape, dtype=float)
-cl1_matrix[dom_matrix == 2] = 0.00000000 
-
-
-# Save the cl1_matrix to a new text file
-with open('CL/2-cl.txt', 'w') as f:
-    for row in cl1_matrix:
-        # Format each row to match the structure of 1-cl.txt
-        formatted_row = '   '.join(f'{val:.8f}' for val in row)
-        f.write(f'{formatted_row}\n')
-    for i in range (2,21):
-        Q_out = (10*0 + 5*1)*10**(-3)
-        Q_in = Q_out/2
-        q_spe = Q_in/ 18
-
-print("cl2.txt has been created successfully.")# Q_out = 5e-3
-Q_in = Q_out / 2                     # Q_in = 2.5e-3
-q_spe = Q_in / 18                    # q_spe = (2.5e-3) / 18 ≈ 0.00013888888888888889
-
-# Set q_spe in the first row (row index 0) and columns 2 to 20 (column indices 1 to 19)
-cl1_matrix[1, 79:99] = q_spe
-cl1_matrix[99, 79:99] = q_spe
+# Apply Neumann conditions around the obstacle
+# Example: Set derivative conditions around the obstacle
+# This requires identifying the nodes around the obstacle and applying the derivative
 
 # Save the cl1_matrix to a new text file
-with open('CL/2-cl.txt', 'w') as f:
+with open('2-cl.txt', 'w') as f:
     for row in cl1_matrix:
-        # Format each row to match the structure of 1-cl.txt
         formatted_row = '   '.join(f'{val:.8f}' for val in row)
         f.write(f'{formatted_row}\n')
 
-print("cl2.txt has been created successfully.")
+print("Boundary conditions have been set successfully.")
