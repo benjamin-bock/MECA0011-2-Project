@@ -30,9 +30,8 @@ def main():
         print(f"La matrice X vaut \n {X} \n")
 
         if X.ndim == 1 and dom_1.shape:
-            sol_grid = np.zeros_like(dom_1, dtype=float)
-            for i in range(len(X)):
-                sol_grid[np.where(num_1 == i + 1)] = X[i]  # Map solution back to domain
+            sol_grid = np.full_like(num_1, np.nan, dtype=float)
+            sol_grid[num_1 > 0] = X[num_1[num_1 > 0] - 1]
             
             plt.figure(figsize=(14, 12))
             img = plt.imshow(sol_grid, cmap='coolwarm', origin='upper', interpolation='nearest')
@@ -66,29 +65,23 @@ def main():
             h = 0.5  # pas spatial pour le canal rectiligne (d'après le README)
             u, v = velocity(sol_grid, dom_1, h)
             
-            speed = np.sqrt(u**2 + v**2)
-            # Visualisation du champ de vitesse
-            plt.style.use('seaborn-v0_8-whitegrid') 
-            fig, ax = plt.subplots(figsize=(14, 10), dpi=100)
-            q = ax.quiver(u, v, speed, 
-              cmap='inferno',  # Palette de couleurs
-              scale=20,         # Échelle des flèches
-              width=0.002,      # Largeur des flèches
-              headwidth=5,      # Largeur des têtes de flèches
-              alpha=0.8)        # Transparence
+            # Préparation des grilles pour quiver
+            ny, nx = sol_grid.shape
+            x = np.arange(nx) * h
+            y = np.arange(ny) * h
+            Xg, Yg = np.meshgrid(x, y)
+            Xr = Yg.T
+            Yr = Xg.T
+            u_rot = v.T
+            v_rot = u.T
 
-            # Ajout d'une barre de couleur
-            cbar = fig.colorbar(q, ax=ax, label='Vitesse (m/s)', shrink=0.8)
-            cbar.ax.tick_params(labelsize=12)
-
-             # Personnalisation de l'affichage 
-            ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)', 
-             fontsize=16, pad=20, fontfamily='serif')
-            ax.set_xlabel('Position x (m)', fontsize=14, fontfamily='serif')
-            ax.set_ylabel('Position y (m)', fontsize=14, fontfamily='serif')
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.set_aspect('equal')  # Conserve les proportions
-            plt.tight_layout()
+            plt.figure(figsize=(10, 7))
+            plt.quiver(Xr, Yr, u_rot, v_rot, color='cornflowerblue')
+            plt.xlabel("y [m]")
+            plt.ylabel("x [m]")
+            plt.title("Champ de vitesse")
+            plt.axis("equal")
+            plt.grid(True)
             plt.show()
 
 
@@ -156,8 +149,8 @@ def main():
         print(f"La matrice A vaut \n {A} \n")
         print(f"La matrice B vaut \n {B} \n")
         
-        X = solve_system(A, B)
-        print(f"La matrice X vaut \n {X} \n")
+        psi = solve_system(A, B)
+        print(f"La matrice $\psi$ vaut \n {psi} \n")
         
         colors = [(1, 1, 1)]  # Blanc pour 0
         colors.extend(plt.cm.viridis(np.linspace(0, 1, 255))) 
@@ -167,10 +160,9 @@ def main():
         [(0.0, 'white')] + [(i / 255.0, plt.cm.Reds(i)) for i in range(1, 256)])
         
 
-        if X.ndim == 1 and dom_2.shape:
-            sol_grid = np.zeros_like(dom_2, dtype=float)
-            for i in range(len(X)):
-                sol_grid[np.where(num_2 == i + 1)] = X[i]  # Map solution back to domain
+        if psi.ndim == 1 and dom_2.shape:
+            sol_grid = np.full_like(num_2, np.nan, dtype=float)
+            sol_grid[num_2 > 0] = psi[num_2[num_2 > 0] - 1]
            
             
            
@@ -200,42 +192,24 @@ def main():
             h = 0.01  # pas spatial pour le canal rectiligne (d'après le README)
             u, v = velocity(sol_grid, dom_2, h)
             
-            speed = np.sqrt(u**2 + v**2)
-            
             # Visualisation du champ de vitesse
-            plt.style.use('seaborn-v0_8-whitegrid')
-            fig, ax = plt.subplots(figsize=(14, 10), dpi=100)
-            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
-            x, y = np.meshgrid(np.arange(u.shape[1]), np.arange(u.shape[0]))
-            y = np.flipud(y)  # Inverse l'ordre des indices de y
+            ny, nx = sol_grid.shape
+            x = np.arange(nx) * h
+            y = np.arange(ny) * h
+            Xg, Yg = np.meshgrid(x, y)
+            Xr = Yg.T
+            Yr = Xg.T
+            u_rot = v.T
+            v_rot = u.T
 
-            
-            # Utilisation correcte de quiver
-            q = ax.quiver(x, y, u, v, speed,
-                          cmap='inferno',  # Palette de couleurs
-                          scale=5,         # Échelle des flèches
-                          width=0.001,      # Largeur des flèches
-                          headwidth=5,      # Largeur des têtes de flèches
-                          alpha=0.8)        # Transparence
-            
-            # Ajout d'une barre de couleur
-            cbar = fig.colorbar(q, ax=ax, label='Vitesse (m/s)', shrink=0.8)
-            cbar.ax.tick_params(labelsize=12)
-            
-            # Personnalisation de l'affichage
-            ax.set_title(r'Champ de vitesse dans le canal ($h = 0.01$)',
-                         fontsize=16, pad=20, fontfamily='serif')
-            ax.set_xlabel('Position x (m)', fontsize=14, fontfamily='serif')
-            ax.set_ylabel('Position y (m)', fontsize=14, fontfamily='serif')
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.set_aspect('equal')  # Conserve les proportions
-            
-            # Ajout de lignes de courant (optionnel)
-            ax.streamplot(x, y, u, v, color='w', linewidth=0.5)
-            
-            plt.tight_layout()
+            plt.figure(figsize=(10, 7))
+            plt.quiver(Xr, Yr, u_rot, v_rot, color='cornflowerblue')
+            plt.xlabel("y [m]")
+            plt.ylabel("x [m]")
+            plt.title("Champ de vitesse (canal en J)")
+            plt.axis("equal")
+            plt.grid(True)
             plt.show()
-
 
             # Création d'une grille de z (hauteur constante)
             z = np.zeros_like(sol_grid)
@@ -273,7 +247,7 @@ def main():
             circulation = circu(u_contour, v_contour, x_contour, y_contour)
             print(f"\nCirculation autour du contour central: {circulation:.2f} m²/s")
 
-        return X, u, v, pressure, cl_2
+        return psi, u, v, pressure, cl_2
 
     #X_rect = canal_rectiligne()
     X_j  = canal_en_j()
