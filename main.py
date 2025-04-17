@@ -4,7 +4,7 @@ import scipy as sp
 from matplotlib.colors import LinearSegmentedColormap
 
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
-from tools import circu, deriv, force
+from tools import circu, deriv
 from tools.constante import rho, g, p_ref, ref_point, Q_out
 from CL.createcl2 import createCL2
 
@@ -84,13 +84,8 @@ def main():
             plt.grid(True)
             plt.show()
 
-
-            # Création d'une grille de z (hauteur constante)
-            z = np.zeros_like(sol_grid)
-            for i in range(z.shape[0]):
-                z[i, :] = 0
             
-            pressure = calculate_pressure(u, v, z, rho, g, None, p_ref, ref_point)
+            pressure = calculate_pressure(Xr,Yr,u_rot,v_rot)
             
             # Visualisation de la pression
             plt.figure(figsize=(12, 8))
@@ -105,11 +100,6 @@ def main():
             x = np.array([i * h for i in range(sol_grid.shape[0])])
             y = np.zeros_like(x)
             p_section = pressure[:, mid]
-            
-            fx, fy = force(p_section, x, y)
-            print("\nForces sur la section centrale:")
-            print(f"Fx = {fx:.2f} N")
-            print(f"Fy = {fy:.2f} N")
             
             # Calcul de la circulation
             # Exemple pour un contour rectangulaire au centre
@@ -210,13 +200,9 @@ def main():
             plt.axis("equal")
             plt.grid(True)
             plt.show()
-
-            # Création d'une grille de z (hauteur constante)
-            z = np.zeros_like(sol_grid)
-            for i in range(z.shape[0]):
-                z[i, :] = i*h
             
-            pressure = calculate_pressure(u, v, z, rho, g, None, p_ref, ref_point)
+            pressure = calculate_pressure(Xr,Yr,u_rot, v_rot,)
+            pressure = pressure[::-1]
             
             # Visualisation de la pression
             plt.figure(figsize=(12, 8))
@@ -224,18 +210,6 @@ def main():
             plt.colorbar(label='Pression (Pa)')
             plt.title("Distribution de pression")
             plt.show()
-
-            # Calcul des forces sur les parois
-            # Exemple pour une section verticale au milieu
-            mid = sol_grid.shape[1] // 2
-            x = np.array([i * h for i in range(sol_grid.shape[0])])
-            y = np.zeros_like(x)
-            p_section = pressure[:, mid]
-            
-            fx, fy = force(p_section, x, y)
-            print("\nForces sur la section centrale:")
-            print(f"Fx = {fx:.2f} N")
-            print(f"Fy = {fy:.2f} N")
             
             # Calcul de la circulation
             # Exemple pour un contour rectangulaire au centre

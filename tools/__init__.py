@@ -5,7 +5,7 @@
 # Example:
 from .circu import circu
 from .deriv import deriv
-from .force import force
 
-__all__ = ["circu", "deriv","force"]  # Specify the public API of the package if needed
+
+__all__ = ["circu", "deriv"]  # Specify the public API of the package if needed
 

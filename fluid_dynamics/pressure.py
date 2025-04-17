@@ -1,17 +1,20 @@
 import numpy as np
 
-def calculate_pressure(u, v, z, rho, g, C, p_ref, ref_point):
-
-    velocity_sq = u**2 + v**2
+def calculate_pressure(X, Y, U, V) :
     
-    # Détermination de la constante C
-    if C is None:
-        if p_ref is None or ref_point is None:
-            raise ValueError("Either provide C or (p_ref and ref_point)")
-        i, j = ref_point
-        C = (p_ref/(rho*g)) + z[i,j] + velocity_sq[i,j]/(2*g)
+    C = 0.001
+    rho = 1000
+    g = 9.81
     
-    # Calcul de la pression selon l'équation de Bernoulli
-    pressure = rho * g * (C + z - velocity_sq/(2*g))
+    p = np.zeros((X.shape[0], X.shape[1]))
+    ampl = 0
     
-    return pressure 
+    for i in range(X.shape[0]) :
+        for j in range(X.shape[1]) :
+            if(U[i][j]==0 and V[i][j] == 0) :
+                p[i][j] = np.nan
+            else :
+                ampl = (U[i][j])**2 + (V[i][j])**2 
+                p[i][j] = rho*g*(C- ampl/(2*g))
+    
+    return p
