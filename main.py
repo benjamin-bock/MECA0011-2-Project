@@ -6,7 +6,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
 from tools import circu, deriv
 from tools.constante import rho, g, p_ref, ref_point, Q_out
-from CL.createcl2 import createCL2
+from CL.createcl2 import createCL2, createCL2q3
 
 def main():
     def canal_rectiligne():
@@ -122,7 +122,6 @@ def main():
             dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
             num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
             contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
-            cl_2 = np.loadtxt("CL/2-cl.txt",dtype = float)
         except:
             print("Erreur lors de l'ouverture des fichiers")
             return None
@@ -131,16 +130,24 @@ def main():
 
         # Définition des conditions aux limites
         cl_2 = createCL2(dom_2, num_2, contour_obj_2)
+        cl_2q3 = createCL2q3(dom_2, num_2, contour_obj_2)
         
         
         A, B = create_system(dom_2, num_2, cl_2)
+        A3, B3 = create_system(dom_2, num_2, cl_2q3)
         print(f"A shape: {A.shape}, B shape: {B.shape}\n")
+        print(f"A3 shape: {A3.shape}, B3 shape: {B3.shape}\n")
 
         print(f"La matrice A vaut \n {A} \n")
         print(f"La matrice B vaut \n {B} \n")
+        print(f"La matrice A3 vaut \n {A3} \n")
+        print(f"La matrice B3 vaut \n {B3} \n")
         
         psi = solve_system(A, B)
+        psi3 = solve_system(A3, B3)
         print(f"La matrice $\psi$ vaut \n {psi} \n")
+        print(f"La matrice $\psi3$ vaut \n {psi3} \n")
+        # Affichage de la solution
         
         colors = [(1, 1, 1)]  # Blanc pour 0
         colors.extend(plt.cm.viridis(np.linspace(0, 1, 255))) 
@@ -194,8 +201,8 @@ def main():
 
             plt.figure(figsize=(10, 7))
             plt.quiver(Xr, Yr, u_rot, v_rot, color='cornflowerblue')
-            plt.xlabel("y [m]")
-            plt.ylabel("x [m]")
+            plt.xlabel("x [m]")
+            plt.ylabel("y [m]")
             plt.title("Champ de vitesse (canal en J)")
             plt.axis("equal")
             plt.grid(True)
@@ -220,18 +227,66 @@ def main():
             
             circulation = circu(u_contour, v_contour, x_contour, y_contour)
             print(f"\nCirculation autour du contour central: {circulation:.2f} m²/s")
+        
+        if psi3.ndim == 1 and dom_2.shape:
+            sol_grid3 = np.full_like(num_2, np.nan, dtype=float)
+            sol_grid3[num_2 > 0] = psi3[num_2[num_2 > 0] - 1]
+           
+            plt.figure(figsize=(14, 12))
+            img = plt.imshow(sol_grid3, cmap="PuOr", interpolation='nearest')
+            cbar = plt.colorbar(img, fraction=0.046, pad=0.04)
+            cbar.ax.tick_params(labelsize=12) 
+            cbar.set_label('Valeur de la solution', fontsize=14)
+           
+            # Ajouter la grille
+            plt.grid(True, which='both', linestyle='-', linewidth=0.5, color='black', alpha=0.3)
+            plt.xticks(np.arange(-0.5, dom_2.shape[1], 1), [])
+            plt.yticks(np.arange(-0.5, dom_2.shape[0], 1), [])
+            plt.gca().set_facecolor('#f0f0f0')
+           
+            plt.title("Visualisation de la solution", fontsize=20, pad = 20)
+           
+            for spine in plt.gca().spines.values():
+               spine.set_color('dimgray')
+               spine.set_linewidth(1.5)
+              
+            plt.tight_layout(pad = 3)
+            plt.show()
 
-        return psi, u, v, pressure, cl_2
+            # Calcul du champ de vitesse
+            h = 0.01
+            u3, v3 = velocity(sol_grid3, dom_2, h)
+            # Visualisation du champ de vitesse
+            ny, nx = sol_grid3.shape
+            x = np.arange(nx) * h
+            y = np.arange(ny) * h
+            Xg, Yg = np.meshgrid(x, y)
+            Xr3 = Yg.T
+            Yr3 = Xg.T
+            u_rot3 = v3.T
+            v_rot3 = u3.T
+            plt.figure(figsize=(10, 7))
+            plt.quiver(Xr3, Yr3, u_rot3, v_rot3, color='cornflowerblue')
+            plt.xlabel("x [m]")
+            plt.ylabel("y [m]")
+            plt.title("Champ de vitesse (canal en J) avec $Q_{in} = 0.7Q_{out}$")
+            plt.axis("equal")
+            plt.grid(True)
+            plt.show()
+
+
+
+        return psi, u, v, pressure,
 
     #X_rect = canal_rectiligne()
     X_j  = canal_en_j()
     dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
     num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
     contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
-    cl_2 = np.loadtxt('CL/2-cl.txt', dtype = float)
     
     
-    return  X_j, dom_2, num_2, contour_obj_2, cl_2
+    
+    return  X_j, dom_2, num_2, contour_obj_2
 
 if __name__ == "__main__":
-    X_j, dom_2, num_2, contour_obj_2, cl_2 = main()
+    X_j, dom_2, num_2, contour_obj_2 = main()
