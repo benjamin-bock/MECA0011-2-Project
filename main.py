@@ -251,6 +251,55 @@ def main():
                 plt.ylabel("y [m]")
                 plt.savefig('Figures/Pressure.pdf', dpi = 300, format = 'pdf')
                 plt.show()
+            
+            # Calcul de la circulation autour de l'obstacle en T
+            if len(contour_obj_2) > 0:
+                # Extraire les coordonnées du contour
+                x_contour = []
+                y_contour = []
+                u_contour = []
+                v_contour = []
+                
+                # Pour chaque point du contour
+                for i in range(contour_obj_2.shape[0]):
+                    # Coordonnées du point dans la grille
+                    row, col = contour_obj_2[i]
+                    
+                    # Convertir en coordonnées réelles
+                    x_contour.append(col * h)
+                    y_contour.append(row * h)
+                    
+                    # Obtenir les composantes de vitesse à ce point
+                    # Vérifier que le point est dans le domaine fluide
+                    if 0 <= row < u.shape[0] and 0 <= col < u.shape[1]:
+                        u_contour.append(u[row, col])
+                        v_contour.append(v[row, col])
+                    else:
+                        u_contour.append(0)
+                        v_contour.append(0)
+                
+                # Fermer le contour en ajoutant le premier point à la fin
+                if len(x_contour) > 0:
+                    x_contour.append(x_contour[0])
+                    y_contour.append(y_contour[0])
+                    u_contour.append(u_contour[0])
+                    v_contour.append(v_contour[0])
+                
+                # Calculer la circulation
+                circulation = circu(u_contour, v_contour, x_contour, y_contour)
+                print(f"\nCirculation autour de l'obstacle en T: {circulation:.6f} m²/s")
+                
+                # Visualiser le contour si demandé
+                if plot_solution or plot_velocity:
+                    plt.figure(figsize=(10, 7))
+                    plt.plot(x_contour, y_contour, 'r-', linewidth=2)
+                    plt.xlabel("x [m]")
+                    plt.ylabel("y [m]")
+                    plt.title("Contour de l'obstacle")
+                    plt.axis("equal")
+                    plt.grid(True)
+                    plt.savefig('Figures/Contour_Obstacle.pdf', dpi=300, format='pdf')
+                    plt.show()
 
         if psi3.ndim == 1 and dom_2.shape:
             sol_grid3 = np.full_like(num_2, np.nan, dtype=float)
@@ -320,6 +369,56 @@ def main():
                 plt.ylabel("y [m]")
                 plt.savefig('Figures/PressureQ3.pdf', dpi = 300, format = 'pdf')
                 plt.show()
+                
+            # Calcul de la circulation autour de l'obstacle en T pour la solution Q3
+            if len(contour_obj_2) > 0:
+                # Extraire les coordonnées du contour
+                x_contour3 = []
+                y_contour3 = []
+                u_contour3 = []
+                v_contour3 = []
+                
+                # Pour chaque point du contour
+                for i in range(contour_obj_2.shape[0]):
+                    # Coordonnées du point dans la grille
+                    row, col = contour_obj_2[i]
+                    
+                    # Convertir en coordonnées réelles
+                    x_contour3.append(col * h)
+                    y_contour3.append(row * h)
+                    
+                    # Obtenir les composantes de vitesse à ce point
+                    # Vérifier que le point est dans le domaine fluide
+                    if 0 <= row < u3.shape[0] and 0 <= col < u3.shape[1]:
+                        u_contour3.append(u3[row, col])
+                        v_contour3.append(v3[row, col])
+                    else:
+                        u_contour3.append(0)
+                        v_contour3.append(0)
+                
+                # Fermer le contour en ajoutant le premier point à la fin
+                if len(x_contour3) > 0:
+                    x_contour3.append(x_contour3[0])
+                    y_contour3.append(y_contour3[0])
+                    u_contour3.append(u_contour3[0])
+                    v_contour3.append(v_contour3[0])
+                
+                # Calculer la circulation
+                circulation3 = circu(u_contour3, v_contour3, x_contour3, y_contour3)
+                print(f"\nCirculation autour de l'obstacle en T (Q3): {circulation3:.6f} m²/s")
+                
+                # Visualiser le contour si demandé
+                if plot_solution or plot_velocity:
+                    plt.figure(figsize=(10, 7))
+                    plt.plot(x_contour3, y_contour3, 'r-', linewidth=2)
+                    plt.xlabel("x [m]")
+                    plt.ylabel("y [m]")
+                    plt.title("Contour de l'obstacle (Q3)")
+                    plt.axis("equal")
+                    plt.grid(True)
+                    plt.savefig('Figures/Contour_Obstacle_Q3.pdf', dpi=300, format='pdf')
+                    plt.show()
+                    
             return psi
 
     #X_rect = canal_rectiligne()
