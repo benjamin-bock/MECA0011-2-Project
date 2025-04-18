@@ -114,7 +114,7 @@ def main():
 
         return X, u, v, pressure
     
-    def canal_en_j(plot_solution=False, plot_velocity=False, plot_pressure=False):
+    def canal_en_j(plot_solution=False, plot_velocity=False, plot_pressure=False,plot_streamlines=False):
         print("\n############################################################################\n")
         print("Résolution du canal en \"J\" \n")
         
@@ -208,6 +208,37 @@ def main():
                 plt.savefig('Figures/VitesseVerticale.pdf', dpi = 300, format = 'pdf')
                 plt.show()
 
+            if plot_streamlines:
+                plt.figure(figsize=(10, 7))
+                speed = np.sqrt(u_rot**2 + v_rot**2)
+                norm = plt.Normalize(vmin=speed.min(), vmax=speed.max())
+                
+                # Affichage de la heatmap de la vitesse
+                plt.figure(figsize=(8, 6))
+                plt.pcolormesh(Xr, Yr, speed, shading='auto', cmap='magma', norm=norm)
+                cbar = plt.colorbar(label='Vitesse')
+                
+                # Tracer les streamlines
+                streams = plt.streamplot(
+                    Xr, Yr, u_filtered, v_filtered,
+                    color=speed,          # Couleurs basées sur 'speed'
+                    cmap='viridis',       # Colormap différente pour contraster
+                    linewidth=1,
+                    density=1.5,
+                    norm=norm             # Utiliser la même normalisation que la heatmap
+                )
+                
+                # Ajuster les axes pour correspondre à l'orientation correcte
+                plt.gca().invert_yaxis()  # Inverser l'axe Y pour corriger l'affichage
+                plt.xlabel("x [m]")
+                plt.ylabel("y [m]")
+                plt.title("Lignes de courant (Streamlines)")
+                plt.axis("equal")
+                plt.grid(True)
+                plt.savefig('Figures/Streamlines.pdf', dpi=300, format='pdf')
+                plt.show()
+
+
             # Calcul et affichage de la pression
             if plot_pressure:
                 pressure = calculate_pressure(Xr, Yr, v.T, u.T, dom_2.T)
@@ -292,7 +323,7 @@ def main():
             return psi
 
     #X_rect = canal_rectiligne()
-    X_j  = canal_en_j(plot_pressure=True)
+    X_j  = canal_en_j(plot_streamlines=True)
     dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
     num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
     contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
