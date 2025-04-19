@@ -129,3 +129,73 @@ def createCL2q3(dom, num, contour_obj):
         
     np.savetxt("conditions_limites.txt", cl2, fmt="%.6f")
     return cl2
+
+def createCL2q5(dom, num, contour_obj):
+    """
+    Create the CL2 matrix based on the provided domain, number, and contour object matrices.
+    
+    Parameters:
+    dom (numpy.ndarray): The domain matrix.
+    num (numpy.ndarray): The number matrix.
+    contour_obj (numpy.ndarray): The contour object matrix.
+    
+    Returns:
+    numpy.ndarray: The created CL2 matrix.
+    """
+    # Initialize the CL2 matrix with zeros
+    cl2 = np.zeros_like(dom, dtype=float)
+    
+    # Set values in the CL2 matrix based on the domain and contour object matrices
+    
+    h = 0.01
+    ouverture = 21
+    vitesse = Q_out  / (h * ouverture)
+    
+    # Q_out
+    for i in range(1, 22):
+        cl2[1, i] = vitesse * (i * h) + 1
+        
+    # Borne du domaine
+    for i in range(2, 41, 1): # Horizontale supérieure
+        cl2[i, 21] = cl2[1, 21]
+    for i in range(21, 80, 1): # Montée gauche
+        cl2[40, i] = cl2[1, 21]
+    for i in range(1, 80): # Montée droite
+        cl2[60, i] = cl2[1, 1]
+    for i in range(2, 61): # Horizontale inférieure
+        cl2[i, 1] = cl2[1, 1] 
+        
+        
+        
+    # Q_in
+    for i in range(21):
+        cl2[1, 79 + i] = cl2[1, 21] - vitesse * (i * h) * 0.5 
+        cl2[99, 79 + i] = cl2[1, 1] + vitesse * (i * h) * 0.5
+        
+    # Borne supérieure du domaine
+    for i in range(99):
+        cl2[1+i, 99] = cl2[1, 99]
+    
+    # Borne inférieure de la barre du "J"
+    for i in range(1, 41, 1):
+        cl2[i, 79] = cl2[1, 21]
+        
+    for i in range(60, 100, 1):
+        cl2[i, 79] = cl2[1, 1]
+        
+    # Contour obstacle
+    for i in range(np.shape(contour_obj)[0]):
+        cl2[contour_obj[i][0]][contour_obj[i][1]] = cl2[1,99]*0.9983099# Moitié de Q_in
+
+    for i in range(46,56):
+        for j in range(25,32):
+            # Exclure la ligne 55 de la colonne 27 à 31
+            if i == 54 and (26 <= j <= 31):  # Note: indices 0-based donc 55->54 et 27->26
+                pass
+            
+            elif i != 55 or 27 >= j >= 31 : 
+                cl2[i][j] = cl2[1,99]*0.9983099
+    
+    
+    np.savetxt("conditions_limites.txt", cl2, fmt="%.6f")
+    return cl2

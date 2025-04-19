@@ -7,7 +7,7 @@ import matplotlib.patches as patches
 from fluid_dynamics import create_system, solve_system, calculate_pressure, velocity
 from tools import circu 
 from tools.constante import rho, g, p_ref, ref_point, Q_out
-from CL.createcl2 import createCL2, createCL2q3
+from CL.createcl2 import createCL2, createCL2q3, createCL2q5
 
 # Définir les tailles de police par défaut pour tous les graphiques
 plt.rcParams.update({
@@ -144,13 +144,16 @@ def main():
         # Définition des conditions aux limites
         cl_2 = createCL2(dom_2, num_2, contour_obj_2)
         cl_2q3 = createCL2q3(dom_2, num_2, contour_obj_2)
+        cl_2q5 = createCL2q5(dom_2,num_2, contour_obj_2)
         A, B = create_system(dom_2, num_2, cl_2)
         A3, B3 = create_system(dom_2, num_2, cl_2q3)
+        A5, B5 = create_system(dom_2, num_2, cl_2q5)
 
         print(f"A shape: {A.shape}, B shape: {B.shape}\n")
 
         psi = solve_system(A, B)
         psi3 = solve_system(A3, B3)
+        psi5 = solve_system(A5, B5)
         print(f"La matrice $\psi$ vaut \n {psi} \n")
         blue = (0x93/255, 0x0F/255, 0xFF/255)   # Bleu foncé
         gray = (0xAB/255, 0x9F/255, 0x9F/255) # Gris plus foncé
@@ -226,11 +229,12 @@ def main():
                 plt.show()
 
             if plot_streamlines:
+                
                 plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
                 speed = np.sqrt(u_filtered**2 + v_filtered**2)
                 strm = plt.streamplot(Xg, Yg, u_filtered, v_filtered, 
                                     color=speed, cmap='plasma', 
-                                    density=3, linewidth=0.5, 
+                                    density=4, linewidth=0.5, 
                                     arrowsize=0.0)
                 
                 cbar = plt.colorbar(strm.lines,ticks=[-1, 0, 1])
@@ -241,6 +245,28 @@ def main():
                 plt.axis("equal")
                 plt.grid(True)
                 plt.savefig('Figures/Streamlines.pdf', dpi=300, format='pdf')
+                plt.show()
+                
+                plt.figure(figsize=(10, 8))
+                # Calculer les coordonnées physiques pour le zoom
+                x_zoom = Xg[30:70, 10:50]  # Zone plus large
+                y_zoom = Yg[30:70, 10:50]  # Zone plus large
+                u_zoom = u_filtered[30:70, 10:50]  # Zone plus large
+                v_zoom = v_filtered[30:70, 10:50]  # Zone plus large
+                speed_zoom = np.sqrt(u_zoom**2 + v_zoom**2)
+
+                strm_zoom = plt.streamplot(x_zoom, y_zoom, u_zoom, v_zoom,
+                                         color=speed_zoom, cmap='plasma',
+                                         density=1, linewidth=0.5,
+                                         arrowsize=0.0, start_points= None,broken_streamlines= False)
+                
+                cbar = plt.colorbar(strm_zoom.lines)
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse [m/s]', fontsize=16, rotation=90, labelpad=15)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
+                plt.grid(True)
+                plt.savefig('Figures/StreamlinesZoom.pdf', dpi=300, format='pdf')
                 plt.show()
 
 
@@ -328,8 +354,8 @@ def main():
             u3, v3 = velocity(sol_grid3, dom_2, h)
             u3_filtered = np.full_like(u3, np.nan, dtype=float)
             v3_filtered = np.full_like(v3, np.nan, dtype=float)
-            u3_filtered[dom_2 == 1] = u3[dom_2 == 1]
-            v3_filtered[dom_2 == 1] = v3[dom_2 == 1]
+            u3_filtered[dom_2 >0] = u3[dom_2 >0]
+            v3_filtered[dom_2 >0] = v3[dom_2 >0]
             ny, nx = sol_grid3.shape
             x = np.arange(nx) * h
             y = np.arange(ny) * h
@@ -434,12 +460,70 @@ def main():
                     plt.grid(True)
                     plt.savefig('Figures/Contour_Obstacle_Q3.pdf', dpi=300, format='pdf')
                     plt.show()
+        if psi5.ndim == 1 and dom_2.shape:
+            sol_grid5 = np.full_like(num_2, np.nan, dtype=float)
+            sol_grid5[num_2 > 0] = psi5[num_2[num_2 > 0] - 1]
+            u5, v5 = velocity(sol_grid5, dom_2, h)
+            u5_filtered = np.full_like(u5, np.nan, dtype=float)
+            v5_filtered = np.full_like(v5, np.nan, dtype=float)
+            u5_filtered[dom_2 > 0] = u5[dom_2 > 0]
+            v5_filtered[dom_2 > 0] = v5[dom_2 > 0]
+            ny, nx = sol_grid.shape
+            x = np.arange(nx) * h
+            y = np.arange(ny) * h
+            Xg, Yg = np.meshgrid(x, y)
+            Xr = Yg.T
+            Yr = Xg.T
+            u5_rot = v_filtered.T[::-1]
+            v5_rot = u_filtered.T[::-1]
+
+            if plot_streamlines:
+                """
+                plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
+                speed = np.sqrt(u5_filtered**2 + v5_filtered**2)
+                strm = plt.streamplot(Xg, Yg, u5_filtered, v5_filtered, 
+                                    color=speed, cmap='plasma', 
+                                    density=3, linewidth=0.5, 
+                                    arrowsize=0.0)
+                
+                cbar = plt.colorbar(strm.lines,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse [m/s]', fontsize=16, rotation=90, labelpad=15)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
+                plt.axis("equal")
+                plt.grid(True)
+                plt.savefig('Figures/StreamlinesCorrect.pdf', dpi=300, format='pdf')
+                plt.show()
+                """
+
+                plt.figure(figsize=(10, 8))
+                # Calculer les coordonnées physiques pour le zoom
+                x_zoom = Xg[30:70, 10:50]  # Zone plus large
+                y_zoom = Yg[30:70, 10:50]  # Zone plus large
+                u_zoom = u5_filtered[30:70, 10:50]  # Zone plus large
+                v_zoom = v5_filtered[30:70, 10:50]  # Zone plus large
+                speed_zoom = np.sqrt(u_zoom**2 + v_zoom**2)
+
+                strm_zoom = plt.streamplot(x_zoom, y_zoom, u_zoom, v_zoom,
+                                         color=speed_zoom, cmap='plasma',
+                                         density=1, linewidth=0.5,
+                                         arrowsize=0.0, start_points= None,broken_streamlines= False)
+                
+                cbar = plt.colorbar(strm_zoom.lines)
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse [m/s]', fontsize=16, rotation=90, labelpad=15)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
+                plt.grid(True)
+                plt.savefig('Figures/StreamlinesZoomQ5.pdf', dpi=300, format='pdf')
+                plt.show()
+
                     
             return psi
-    def plot_initial_conditions():
+    def plot_initial_conditions(cl_2):
         dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
         num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
-        cl_2 = createCL2(dom_2, num_2, np.loadtxt('CL/2-contourObj.txt', dtype=int))
     
     # Créer la figure avec la même taille que l'exemple
         plt.figure(figsize=(10, 8))
@@ -456,7 +540,7 @@ def main():
     
     # Ajouter une barre de couleur
         cbar = plt.colorbar(ticks=[-1, 0, 1])
-        cbar.set_label('Types de conditions aux limites')
+        cbar.set_label('Valeurs des conditions limite [m²/s]')
     
     # Paramètres du graphique
         plt.xlabel('x [m]')
@@ -467,12 +551,11 @@ def main():
         plt.show()
 
     #X_rect = canal_rectiligne()
-    X_j  = canal_en_j(plot_streamlines=True,plot_pressure=True, plot_velocity=True)
+    X_j  = canal_en_j(plot_velocity=True)
     dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
     num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
     contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
-    cl2 = createCL2(dom_2,num_2,contour_obj_2)
-    plot_initial_conditions()
+    cl2 = createCL2q5(dom_2,num_2,contour_obj_2)
 
     return  X_j, dom_2, num_2, contour_obj_2
 
