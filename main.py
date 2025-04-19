@@ -9,6 +9,19 @@ from tools import circu
 from tools.constante import rho, g, p_ref, ref_point, Q_out
 from CL.createcl2 import createCL2, createCL2q3
 
+# Définir les tailles de police par défaut pour tous les graphiques
+plt.rcParams.update({
+    'font.size': 16,            # Augmenté de 14 à 16
+    'axes.labelsize': 20,       # Augmenté de 16 à 20
+    'axes.titlesize': 24,       # Augmenté de 18 à 24
+    'xtick.labelsize': 16,      # Augmenté de 14 à 16
+    'ytick.labelsize': 16,      # Augmenté de 14 à 16
+    'legend.fontsize': 16,      # Augmenté de 14 à 16
+    'axes.titlepad': 25         # Augmenté de 20 à 25
+})
+
+
+
 def main():
     def canal_rectiligne():
         
@@ -34,7 +47,7 @@ def main():
             sol_grid = np.full_like(num_1, np.nan, dtype=float)
             sol_grid[num_1 > 0] = X[num_1[num_1 > 0] - 1]
             
-            plt.figure(figsize=(14, 12))
+            plt.figure(figsize=(16, 14))  # Augmenté de (14, 12)
             img = plt.imshow(sol_grid, cmap='coolwarm', origin='upper', interpolation='nearest')
             cbar = plt.colorbar(img, fraction=0.046, pad=0.04)
             cbar.ax.tick_params(labelsize=12) 
@@ -76,7 +89,7 @@ def main():
             u_rot = v.T
             v_rot = u.T
 
-            plt.figure(figsize=(10, 7))
+            plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
             plt.quiver(Xr, Yr, u_rot, v_rot, color='cornflowerblue')
             plt.xlabel("y [m]")
             plt.ylabel("x [m]")
@@ -89,7 +102,7 @@ def main():
             pressure = calculate_pressure(Xr,Yr,u_rot,v_rot)
             
             # Visualisation de la pression
-            plt.figure(figsize=(12, 8))
+            plt.figure(figsize=(14, 10))  # Augmenté de (12, 8)
             plt.imshow(pressure, cmap='RdBu')
             plt.colorbar(label='Pression (Pa)')
             plt.title("Distribution de pression")
@@ -160,12 +173,11 @@ def main():
 
             # Affichage de la solution
             if plot_solution:
-                plt.figure(figsize=(14, 12))
+                plt.figure(figsize=(14, 10))  # Dans canal_en_j(), augmenté de (12, 8)
                 img = plt.imshow(sol_grid, cmap="PuOr", interpolation='nearest')
                 cbar = plt.colorbar(img, fraction=0.046, pad=0.04)
-                cbar.ax.tick_params(labelsize=12) 
-                cbar.set_label('Valeur de la solution', fontsize=14)
-                plt.title("Visualisation de la solution", fontsize=20, pad=20)
+                cbar.ax.tick_params(labelsize=14) 
+                cbar.set_label('Valeur de la solution', fontsize=16)
                 plt.grid(True, which='both', linestyle='-', linewidth=0.5, color='black', alpha=0.3)
                 plt.tight_layout(pad=3)
                 plt.show()
@@ -173,8 +185,8 @@ def main():
             u, v = velocity(sol_grid, dom_2, h)
             u_filtered = np.full_like(u, np.nan, dtype=float)
             v_filtered = np.full_like(v, np.nan, dtype=float)
-            u_filtered[dom_2 == 1] = u[dom_2 == 1]
-            v_filtered[dom_2 == 1] = v[dom_2 == 1]
+            u_filtered[dom_2 > 0] = u[dom_2 >0]
+            v_filtered[dom_2 > 0] = v[dom_2 > 0]
             ny, nx = sol_grid.shape
             x = np.arange(nx) * h
             y = np.arange(ny) * h
@@ -183,56 +195,49 @@ def main():
             Yr = Xg.T
             u_rot = v_filtered.T[::-1]
             v_rot = u_filtered.T[::-1]
-            # Calcul et affichage du champ de vitesse
+            
+
             if plot_velocity:
                 
 
-                plt.figure(figsize=(10, 7))
-                img = plt.imshow(u_rot, cmap=purple_gray_orange, interpolation='bilinear', extent=[0,1,0,1])
-                plt.colorbar(img, fraction=0.046, pad=0.04)
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
+                plt.figure(figsize=(13, 10))  # Augmenté de (10, 7)
+                img = plt.imshow(u_rot, cmap=purple_gray_orange, extent=[0,1,0,1])
+                cbar = plt.colorbar(img, fraction=0.046, pad=0.04, ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse horizontale [m/s]', fontsize=16)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
                 plt.axis("equal")
                 plt.grid(True)
-                plt.savefig('Figures/VitesseHorizontale.pdf', dpi = 300, format = 'pdf')
+                plt.savefig('Figures/VitesseHorizontale.pdf', dpi=300, format='pdf')
                 plt.show()
 
 
-                plt.figure(figsize=(10, 7))
-                img = plt.imshow(v_rot, cmap=purple_gray_orange, interpolation='bilinear', extent=[0,1,0,1])
-                plt.colorbar(img, fraction=0.046, pad=0.04)
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
+                plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
+                img = plt.imshow(v_rot, cmap=purple_gray_orange, extent=[0,1,0,1])
+                cbar = plt.colorbar(img, fraction=0.046, pad=0.04, ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse verticale [m/s]', fontsize=16)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
                 plt.axis("equal")
                 plt.grid(True)
-                plt.savefig('Figures/VitesseVerticale.pdf', dpi = 300, format = 'pdf')
+                plt.savefig('Figures/VitesseVerticale.pdf', dpi=300, format='pdf')
                 plt.show()
 
             if plot_streamlines:
-                plt.figure(figsize=(10, 7))
-                speed = np.sqrt(u_rot**2 + v_rot**2)
-                norm = plt.Normalize(vmin=speed.min(), vmax=speed.max())
+                plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
+                speed = np.sqrt(u_filtered**2 + v_filtered**2)
+                strm = plt.streamplot(Xg, Yg, u_filtered, v_filtered, 
+                                    color=speed, cmap='plasma', 
+                                    density=3, linewidth=0.5, 
+                                    arrowsize=0.0)
                 
-                # Affichage de la heatmap de la vitesse
-                plt.figure(figsize=(8, 6))
-                plt.pcolormesh(Xr, Yr, speed, shading='auto', cmap='magma', norm=norm)
-                cbar = plt.colorbar(label='Vitesse')
-                
-                # Tracer les streamlines
-                streams = plt.streamplot(
-                    Xr, Yr, u_filtered, v_filtered,
-                    color=speed,          # Couleurs basées sur 'speed'
-                    cmap='viridis',       # Colormap différente pour contraster
-                    linewidth=1,
-                    density=1.5,
-                    norm=norm             # Utiliser la même normalisation que la heatmap
-                )
-                
-                # Ajuster les axes pour correspondre à l'orientation correcte
-                plt.gca().invert_yaxis()  # Inverser l'axe Y pour corriger l'affichage
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
-                plt.title("Lignes de courant (Streamlines)")
+                cbar = plt.colorbar(strm.lines,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse [m/s]', fontsize=16, rotation=90, labelpad=15)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
                 plt.axis("equal")
                 plt.grid(True)
                 plt.savefig('Figures/Streamlines.pdf', dpi=300, format='pdf')
@@ -244,12 +249,16 @@ def main():
                 pressure = calculate_pressure(Xr, Yr, v.T, u.T, dom_2.T)
                 pressure = pressure[::-1]
 
-                fig, ax = plt.subplots(figsize=(12, 8))
-                im = ax.imshow(pressure, cmap='plasma', interpolation='bilinear', extent= [0,1,0,1])
-                plt.colorbar(im, label='Pression (Pa)')
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
-                plt.savefig('Figures/Pressure.pdf', dpi = 300, format = 'pdf')
+                fig, ax = plt.subplots(figsize=(14, 10))  # Augmenté de (12, 8)
+                im = ax.imshow(pressure, cmap='jet', interpolation='bilinear', extent= [0,1,0,1])
+                cbar = plt.colorbar(im,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Pression [Pa]', fontsize=16)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
+                ax.tick_params(axis='both', which='major', labelsize=14)
+                plt.grid(True)
+                plt.savefig('Figures/Pressure.pdf', dpi=300, format='pdf')
                 plt.show()
             
             # Calcul de la circulation autour de l'obstacle en T
@@ -295,7 +304,6 @@ def main():
                     plt.plot(x_contour, y_contour, 'r-', linewidth=2)
                     plt.xlabel("x [m]")
                     plt.ylabel("y [m]")
-                    plt.title("Contour de l'obstacle")
                     plt.axis("equal")
                     plt.grid(True)
                     plt.savefig('Figures/Contour_Obstacle.pdf', dpi=300, format='pdf')
@@ -306,12 +314,11 @@ def main():
             sol_grid3[num_2 > 0] = psi3[num_2[num_2 > 0] - 1]
 
             if plot_solution:
-                plt.figure(figsize=(14, 12))
+                plt.figure(figsize=(14, 10))  # Augmenté de (12, 8)
                 img = plt.imshow(sol_grid3, cmap="PuOr", interpolation='nearest', extent= [0,1,0,1])
                 cbar = plt.colorbar(img, fraction=0.046, pad=0.04)
-                cbar.ax.tick_params(labelsize=12) 
-                cbar.set_label('Valeur de la solution', fontsize=14)
-                plt.title("Visualisation de la solution", fontsize=20, pad=20)
+                cbar.ax.tick_params(labelsize=16) 
+                cbar.set_label('Valeur de la solution', fontsize=16)
                 plt.grid(True, which='both', linestyle='-', linewidth=0.5, color='black', alpha=0.3)
                 plt.tight_layout(pad=3)
                 plt.xlabel("x")
@@ -336,22 +343,26 @@ def main():
             # Calcul et affichage du champ de vitesse
             if plot_velocity:
 
-                plt.figure(figsize=(10, 7))
+                plt.figure(figsize=(13, 10))  # Augmenté de (10, 7)
                 img = plt.imshow(u_rot3, cmap=purple_gray_orange, interpolation='bilinear', extent=[0,1,0,1])
-                plt.colorbar(img, fraction=0.046, pad=0.04)
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
+                cbar = plt.colorbar(img, fraction=0.046, pad=0.04,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse horizontale [m/s]', fontsize=16)
+                plt.xlabel("x [m]", fontsize = 16)
+                plt.ylabel("y [m]", fontsize = 16)
                 plt.axis("equal")
                 plt.grid(True)
                 plt.savefig('Figures/VitesseHorizontaleQ3.pdf', dpi = 300, format = 'pdf')
                 plt.show()
 
 
-                plt.figure(figsize=(10, 7))
+                plt.figure(figsize=(12, 9))  # Augmenté de (10, 7)
                 img = plt.imshow(v_rot3, cmap=purple_gray_orange, interpolation='bilinear', extent=[0,1,0,1])
-                plt.colorbar(img, fraction=0.046, pad=0.04)
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
+                cbar = plt.colorbar(img, fraction=0.046, pad=0.04,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=16)
+                cbar.set_label('Vitesse horizontale [m/s]', fontsize=16)
+                plt.xlabel("x [m]", fontsize = 16)
+                plt.ylabel("y [m]", fontsize = 16)
                 plt.axis("equal")
                 plt.grid(True)
                 plt.savefig('Figures/VitesseVerticaleQ3.pdf', dpi = 300, format = 'pdf')
@@ -362,11 +373,16 @@ def main():
                 pressure = calculate_pressure(Xr3, Yr3, v3.T,u3.T, dom_2.T)
                 pressure = pressure[::-1]
 
-                fig, ax = plt.subplots(figsize=(12, 8))
-                im = ax.imshow(pressure, cmap='plasma', interpolation='bilinear',extent= [0,1,0,1])
-                plt.colorbar(im, label='Pression (Pa)')
-                plt.xlabel("x [m]")
-                plt.ylabel("y [m]")
+                fig, ax = plt.subplots(figsize=(14, 10))  # Augmenté de (12, 8)
+                im = ax.imshow(pressure, cmap='jet', interpolation='bilinear',extent= [0,1,0,1])
+                cbar = plt.colorbar(im,ticks=[-1, 0, 1])
+                cbar.ax.tick_params(labelsize=14)
+                cbar.set_label('Pression [Pa]', fontsize=16)
+                plt.xlabel("x [m]", fontsize=16)
+                plt.ylabel("y [m]", fontsize=16)
+                plt.title("Distribution de pression", fontsize=18, pad=15)
+                ax.tick_params(axis='both', which='major', labelsize=14)
+                plt.grid(True)
                 plt.savefig('Figures/PressureQ3.pdf', dpi = 300, format = 'pdf')
                 plt.show()
                 
@@ -420,15 +436,45 @@ def main():
                     plt.show()
                     
             return psi
+    def plot_initial_conditions():
+        dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
+        num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
+        cl_2 = createCL2(dom_2, num_2, np.loadtxt('CL/2-contourObj.txt', dtype=int))
+    
+    # Créer la figure avec la même taille que l'exemple
+        plt.figure(figsize=(10, 8))
+
+    
+    # Définir les couleurs personnalisées
+        
+        cl_2[dom_2 == 2]  = cl_2[dom_2 == 2]   
+        cl_2[dom_2 == 1] = np.nan 
+        cl_2[dom_2 == 0] = np.nan
+        cl_2 = cl_2.T[::-1]
+    # Afficher avec imshow
+        plt.imshow(cl_2, cmap='coolwarm', extent=[0, 1, 0, 1])
+    
+    # Ajouter une barre de couleur
+        cbar = plt.colorbar(ticks=[-1, 0, 1])
+        cbar.set_label('Types de conditions aux limites')
+    
+    # Paramètres du graphique
+        plt.xlabel('x [m]')
+        plt.ylabel('y [m]')
+        plt.grid(True)
+    
+        plt.savefig('Figures/ConditionsInitiales.pdf', dpi=300, format='pdf', bbox_inches='tight')
+        plt.show()
 
     #X_rect = canal_rectiligne()
-    X_j  = canal_en_j(plot_streamlines=True)
+    X_j  = canal_en_j(plot_streamlines=True,plot_pressure=True, plot_velocity=True)
     dom_2 = np.loadtxt('CL/2-dom.txt', dtype=int)
     num_2 = np.loadtxt('CL/2-num.txt', dtype=int)
     contour_obj_2 = np.loadtxt('CL/2-contourObj.txt', dtype=int)
     cl2 = createCL2(dom_2,num_2,contour_obj_2)
+    plot_initial_conditions()
 
     return  X_j, dom_2, num_2, contour_obj_2
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # Ajouter cet appel avant les autres
     X_j, dom_2, num_2, contour_obj_2 = main()
