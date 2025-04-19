@@ -2,6 +2,27 @@ import numpy as np
 from tools.constante import Q_out
 
 def calculate_pressure(X, Y, U, V,dom) :
+    """
+    Calculate the pressure of a domain.
+
+    Parameters
+    ----------
+    X: array 2-D 
+        The value of x-axis where the pressure is wanted
+    Y: array 2-D 
+        The value of y-axis where the pressure is wanted
+    U: array 2-D 
+        The value of the horizontal velocity where the pressure is wanted
+    V: array 2-D 
+        The value of the vertical velocity where the pressure is wanted
+    dom : array 2-D
+        The domain where the pressure is wanted
+
+    Returns
+    -------
+    p : array 2-D
+        The pressure in the domain.
+    """
     
     C = Q_out
     rho = 1000

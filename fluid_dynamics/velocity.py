@@ -10,6 +10,25 @@ def min_exclude_zero(arr):
     return np.min(non_zero)
 
 def velocity(X, dom, h):
+    """
+    Calculate the pressure of a domain.
+
+    Parameters
+    ----------
+    X: array 2-D 
+        The value of the stream function
+    dom : array 2-D
+        The domain where the velocity is wanted
+    h : int
+        The step at which is evalued the domain
+
+    Returns
+    -------
+    u : array 2-D
+        The horizontal velocity in the domain.
+    v : array 2-D
+        The vertical velocity in the domain.
+    """
     # Initialize velocity arrays with same shape as domain
     u = np.zeros_like(X, dtype=float)
     v = np.zeros_like(X, dtype=float)

@@ -1,171 +1,56 @@
-# MECA0011-2-Project 🚀
-Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides
+# MECA0011-2-Project 
+Projet de groupe en langage Python effectué dans le cadre du cours d'Éléments de mécanique des fluides à l'Université de Liège.
 
+## Description du Projet
+Ce projet vise à simuler l'écoulement d'un fluide irrotationel autour d'obstacle en utilisant la méthode des différences finies pour résoudre l'équation de Laplace.
+
+## Structure du Projet
 ```text
 MECA0011-2-Project/
-├── CL/
+├── CL/                     # Conditions Limites
 │   ├── 000-README.txt
-│   ├── 1-cl.txt
-│   ├── 1-dom.txt
-│   ├── 1-num.txt
-│   ├── 2-contourObj.txt
-│   ├── 2-dom.txt
-│   └── 2-num.txt
-├── fluid_dynamics/
-│   ├── getCoeff.py
-│   ├── __init__.py
-│   ├── laplacian.py
-│   ├── pressure.py
-│   ├── __pycache__/
-│   │   ├── getCoeff.cpython-312.pyc
-│   │   ├── __init__.cpython-312.pyc
-│   │   ├── laplacian.cpython-312.pyc
-│   │   ├── pressure.cpython-312.pyc
-│   │   └── velocity.cpython-312.pyc
-│   └── velocity.py
-├── main.py
-├── __pycache__/
-│   ├── getCoeff.cpython-311.pyc
-│   ├── getCoeff.cpython-312.pyc
-│   ├── laplacian.cpython-311.pyc
-│   └── laplacian.cpython-312.pyc
-├── README.md
-├── requirements.txt
-└── tools/
-    ├── circu.py
-    ├── deriv.py
-    ├── force.py
-    ├── __init__.py
-    └── __pycache__/
-        ├── circu.cpython-312.pyc
-        ├── deriv.cpython-312.pyc
-        ├── force.cpython-312.pyc
-        └── __init__.cpython-312.pyc
+│   ├── 1-cl.txt           # Conditions limites cas 1
+│   ├── 1-dom.txt          # Domaine cas 1
+│   ├── 1-num.txt          # Numérotation cas 1
+│   ├── 2-contourObj.txt   # Contour de l'obstacle cas 2
+│   ├── 2-dom.txt          # Domaine cas 2
+│   └── 2-num.txt          # Numérotation cas 2
+├── fluid_dynamics/         # Modules de calcul
+│   ├── getCoeff.py        # Calcul des coefficients
+│   ├── laplacian.py       # Résolution de l'équation de Laplace
+│   ├── pressure.py        # Calcul de la pression
+│   └── velocity.py        # Calcul des vitesses
+├── tools/                  # Outils complémentaires
+│   ├── circu.py           # Calcul de la circulation
+│   ├── deriv.py           # Calcul des dérivées
+│   └── force.py           # Calcul des forces
+├── main.py                # Programme principal
+├── requirements.txt       # Dépendances Python
+└── README.md             # Documentation
 ```
 
-## Guide d'utilisation de Git: Pull, Commit et Push 🔄
-
-Ce guide est conçu pour vous aider à comprendre les bases de Git et comment effectuer les opérations courantes comme `pull`, `commit` et `push`, à la fois via le terminal et GitHub Desktop. Parfait pour les débutants!
-
-### 📋 Table des matières
-1. [Qu'est-ce que Git?](#quest-ce-que-git)
-2. [Installation de Git](#installation-de-git)
-3. [Utilisation de Git via le Terminal](#utilisation-de-git-via-le-terminal)
-   - [Cloner un dépôt](#cloner-un-dépôt)
-   - [Pull (Mettre à jour votre dépôt local)](#pull-mettre-à-jour-votre-dépôt-local)
-   - [Commit (Enregistrer vos modifications)](#commit-enregistrer-vos-modifications)
-   - [Push (Envoyer vos modifications sur GitHub)](#push-envoyer-vos-modifications-sur-github)
-4. [Utilisation de GitHub Desktop](#utilisation-de-github-desktop)
-   - [Cloner un dépôt](#cloner-un-dépôt-1)
-   - [Pull (Mettre à jour votre dépôt local)](#pull-mettre-à-jour-votre-dépôt-local-1)
-   - [Commit (Enregistrer vos modifications)](#commit-enregistrer-vos-modifications-1)
-   - [Push (Envoyer vos modifications sur GitHub)](#push-envoyer-vos-modifications-sur-github-1)
-5. [Conclusion](#conclusion)
-
----
-
-## Qu'est-ce que Git? 🤔
-
-Git est un système de contrôle de version qui permet de suivre les modifications apportées à des fichiers au fil du temps. Il est particulièrement utile pour les projets de développement logiciel, car il permet à plusieurs personnes de collaborer sur le même projet sans conflit.
-
-## Installation de Git 💻
-
-### Sur Windows
-1. Téléchargez Git depuis [git-scm.com](https://git-scm.com/)
-2. Suivez les instructions d'installation
-
-### Sur macOS
-1. Ouvrez le Terminal
-2. Installez Git avec Homebrew:
-   ```bash
-   brew install git
-   ```
-
-### Sur Linux
-1. Ouvrez le Terminal
-2. Installez Git avec la commande suivante:
-   ```bash
-   sudo apt-get install git
-   ```
-
-## Utilisation de Git via le Terminal ⌨️
-
-### Cloner un dépôt
-
-Pour commencer à travailler sur un projet, vous devez d'abord cloner le dépôt (repository) sur votre machine locale.
-
+## Installation
+1. Clonez ce dépôt
+2. Installez les dépendances :
 ```bash
-git clone https://github.com/username/repository.git
+pip install -r requirements.txt
 ```
 
-Remplacez `username` par le nom d'utilisateur GitHub et `repository` par le nom du dépôt.
-
-### Pull (Mettre à jour votre dépôt local)
-
-Avant de commencer à travailler, il est important de s'assurer que votre dépôt local est à jour avec le dépôt distant.
-
+## Utilisation
+Pour exécuter la simulation :
 ```bash
-git pull origin main
+python main.py
 ```
 
-Cela mettra à jour votre branche locale avec les dernières modifications de la branche `main` (ou `master` selon le dépôt).
+## Fonctionnalités
+- Résolution de l'équation de Laplace en 2D
+- Calcul des champs de vitesse et de pression
+- Visualisation des lignes de courant
+- Calcul des forces sur l'obstacle
+- Analyse de la circulation
 
-### Commit (Enregistrer vos modifications)
+## Auteurs
+- Benjamin Bock, Baptiste Desmedt & Yazan Saloum
 
-Après avoir apporté des modifications à vos fichiers, vous devez les enregistrer (commit) dans l'historique de Git.
-
-1. Ajoutez les fichiers modifiés à l'index:
-   ```bash
-   git add .
-   ```
-   Cela ajoute tous les fichiers modifiés. Vous pouvez aussi ajouter des fichiers spécifiques en remplaçant `.` par le nom du fichier.
-
-2. Enregistrez les modifications avec un message descriptif:
-   ```bash
-   git commit -m "Votre message de commit ici"
-   ```
-
-### Push (Envoyer vos modifications sur GitHub)
-
-Une fois que vous avez commité vos modifications, vous pouvez les envoyer (push) sur le dépôt distant.
-
-```bash
-git push origin main
-```
-
-Cela enverra vos modifications sur la branche `main` du dépôt distant.
-
-## Utilisation de GitHub Desktop 🖥️
-
-GitHub Desktop est une application graphique qui simplifie l'utilisation de Git. Voici comment effectuer les mêmes opérations avec GitHub Desktop.
-
-### Cloner un dépôt
-
-1. Ouvrez GitHub Desktop
-2. Cliquez sur `File > Clone Repository`
-3. Sélectionnez le dépôt que vous souhaitez cloner et choisissez l'emplacement sur votre machine
-
-### Pull (Mettre à jour votre dépôt local)
-
-1. Ouvrez GitHub Desktop
-2. Sélectionnez le dépôt que vous souhaitez mettre à jour
-3. Cliquez sur `Fetch origin` pour vérifier les mises à jour
-4. Si des mises à jour sont disponibles, cliquez sur `Pull origin` pour les appliquer
-
-### Commit (Enregistrer vos modifications)
-
-1. Après avoir modifié des fichiers, ouvrez GitHub Desktop
-2. Les fichiers modifiés apparaîtront dans la section `Changes`
-3. Ajoutez un message de commit dans la zone de texte en bas à gauche
-4. Cliquez sur `Commit to main` (ou la branche sur laquelle vous travaillez)
-
-### Push (Envoyer vos modifications sur GitHub)
-
-1. Après avoir commité vos modifications, cliquez sur `Push origin` en haut à droite
-2. Vos modifications seront envoyées sur le dépôt distant
-
-## Conclusion 🎉
-
-Que vous utilisiez le terminal ou GitHub Desktop, Git est un outil puissant pour gérer vos projets de développement. Avec ce guide, vous devriez être en mesure de cloner, mettre à jour, enregistrer et envoyer vos modifications sur GitHub. Bon codage!
-
-Si vous avez des questions ou des problèmes, n'hésitez pas à consulter la [documentation officielle de Git](https://git-scm.com/doc) ou à poser des questions sur les forums de la communauté GitHub.
+## Licence
+M.I.T
